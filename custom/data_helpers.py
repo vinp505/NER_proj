@@ -81,7 +81,10 @@ class LanguageData():
         # store language codes and target languages
         self.lang_codes = ["slk", "eng", "swe", "nor", "heb", "rom", "por", "ger", "chi", "hrv", "srb", "dan"]
         
-        if target_langs == ['all'] or target_langs.lower() == 'all':
+        if isinstance(target_langs, str):
+            target_langs = [target_langs.lower()]
+            
+        if target_langs == ['all']:
             target_langs = self.lang_codes
 
         self.target_langs = target_langs
