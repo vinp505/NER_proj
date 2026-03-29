@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#SBATCH --job-name=environment-setup.out        # Job name
+#SBATCH --output=setup.out      # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=8        # Schedule one core
+#SBATCH --time=24:00:00          # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=cores_any
+
+module load Python/3.12.3-GCCcore-13.3.0
+
+python3 --version
+
+cd ..
+
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install --upgrade pip
+pip3 install -r requirements.txt
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+
+echo "Running on $(hostname):"

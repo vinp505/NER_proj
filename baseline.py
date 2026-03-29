@@ -3,14 +3,25 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification, DataCol
 import torch
 from torch.utils.data import DataLoader
 from custom import LanguageData, DataSplit
+import argparse
 import evaluate
+
+parser = argparse.ArgumentParser(description="Fine-tune baseline mBERT model")
+
+parser.add_argument("-o", "--output", help="Output file for test set predictions", required=True)
+
+parser.add_argument("-e", "--epochs", help="Number of fine-tuning epochs", required=True)
+
+args = parser.parse_args()
+
+print(args.output, args.epochs)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using device: {device}")
 
 MODEL_NAME = "google-bert/bert-base-multilingual-cased"
 LR = 3e-5
-EPOCHS = 60
+EPOCHS = int(args.epochs)
 BATCH_SIZE = 8
 
 
@@ -152,4 +163,4 @@ def save_predictions(model, dataloader, tokenizer, filename):
 
 train_model(multi_model, train_dataloader, optimizer, EPOCHS)
 eval_model(multi_model, test_dataloader)
-save_predictions(multi_model, test_dataloader, tokenizer, "predictions.iob2")
+save_predictions(multi_model, test_dataloader, tokenizer, args.output)
