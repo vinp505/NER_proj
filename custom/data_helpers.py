@@ -83,7 +83,7 @@ class LanguageData():
         
         if isinstance(target_langs, str):
             target_langs = [target_langs.lower()]
-            
+
         if target_langs == ['all']:
             target_langs = self.lang_codes
 
@@ -109,12 +109,10 @@ class LanguageData():
             "train" : (None, np.inf),
             "test" : (None, np.inf)
         }
-        # store information about the smallest test set
-        self.smallest_ovr_test_set = (None, np.inf)
 
         # store information about smallest data sets among target languages:
         # set_name : (lang, size)
-        self.smallest_set_tl = {
+        self.smallest_target_set = {
             "train" : (None, np.inf),
             "test" : (None, np.inf)
         }
@@ -168,15 +166,18 @@ class LanguageData():
             if verbose:
                 print(f"Total data sets for '{lang}': {len(tmp_datasets)}.")
 
-            # if only one data set was loaded for a target language, split into train and test
-            if len(tmp_datasets) == 1 and lang in self.target_langs:
-
+            # if only one data set was loaded, split into train and test
+            if len(tmp_datasets) == 1:
+                
+                # obtain proper train set fraction based on the language
+                tr = 0.8 if lang in self.target_langs else 0.5
+                
                 if verbose:
-                   print(f"\nOnly one file successfully loaded for target language '{lang}'. It will be split into train (80%) and test (20%) sets")
+                   print(f"\nOnly one file successfully loaded for '{lang}'. It will be split into train ({tr*100}%) and test ({(1-tr)*100}%) sets.")
 
-                # 80 - 20 split
+                # split
                 d = tmp_datasets[0]
-                train_set_size = int(0.8*d.shape[0])
+                train_set_size = int(tr*d.shape[0])
                 train_set = d.select(range(train_set_size))
                 test_set = d.select(range(train_set_size, d.shape[0]))
 
@@ -186,15 +187,11 @@ class LanguageData():
 
                 if verbose:
                     print(f"Successfully created train ({train_set.shape[0]} sentences) and test ({test_set.shape[0]} sentences) sets for '{lang}'.")
-            
-            # for non-target languages, one dataset is enough
-            if len(tmp_datasets) == 1 and not lang in self.target_langs:
-                
-                if verbose:
-                   print(f"\nOnly one file successfully loaded for non-target language '{lang}'. It will be used as a test set.")
-                         
-                # use data for test set
-                lang_datasets["test"] = tmp_datasets[0]
+
+            # if only two files were loaded, use for train, and test
+            if len(tmp_datasets) == 2:
+                lang_datasets["train"] = tmp_datasets[0]
+                lang_datasets["test"] = tmp_datasets[1]
 
             # if all three data sets were loaded, merge appropriate data sets
             if len(tmp_datasets) == 3:
@@ -202,48 +199,36 @@ class LanguageData():
                 if verbose:
                     print(f"\nAll three files successfully loaded for '{lang}'. Data will be merged.")
                 
-                # if target language, train and test sets are needed
-                if lang in self.target_langs:
-                    train_dev_set = concatenate_datasets([tmp_datasets[0], tmp_datasets[1]], axis= 0)
-                    lang_datasets["train"] = train_dev_set
-                    lang_datasets["test"] = tmp_datasets[2]
+                # train and dev sets are needed
+                train_dev_set = concatenate_datasets([tmp_datasets[0], tmp_datasets[1]], axis= 0)
+                lang_datasets["train"] = train_dev_set
+                lang_datasets["test"] = tmp_datasets[2]
 
-                # if not a target language, only test set is needed
-                else:
-                    test_set = concatenate_datasets(tmp_datasets, axis= 0)
-                    lang_datasets["test"] = test_set
-
-                if verbose and lang in self.target_langs:
+                if verbose:
                     print(f"Successfully merged train and dev sets. New training set contains {lang_datasets["train"].shape[0]} sentences.")
-                
-                elif verbose:
-                    print(f"Successfully merged all data. New test set contains {lang_datasets["test"].shape[0]} sentences.")
 
             # update smallest data set data (target and overall) if needed
             # check train and test set dimensions
             for set_name in ["train", "test"]:
+
+                # obtain current smallest set sizes
+                set_size = self.smallest_set[set_name][1]
+                set_size_target = self.smallest_target_set[set_name][1]
+
+
+                # update if needed
+
+                if set_size > lang_datasets[set_name].shape[0]:
+                    self.smallest_set[set_name] = (lang, lang_datasets[set_name].shape[0])
+
+                    if verbose:
+                        print(f"New smallest {set_name} set: {lang_datasets[set_name].shape[0]} sentences ({lang}).")
                 
-                # only proceed if language has the given set
-                if not lang_datasets[set_name] is None:
+                if set_size_target > lang_datasets[set_name].shape[0] and lang in self.target_langs:
+                    self.smallest_target_set[set_name] = (lang, lang_datasets[set_name].shape[0])
 
-                    # obtain current smallest set sizes
-                    set_size = self.smallest_set[set_name][1]
-                    set_size_target = self.smallest_set_tl[set_name][1]
-
-
-                    # update if needed
-
-                    if set_size > lang_datasets[set_name].shape[0]:
-                        self.smallest_set[set_name] = (lang, lang_datasets[set_name].shape[0])
-
-                        if verbose:
-                            print(f"New smallest {set_name} set: {lang_datasets[set_name].shape[0]} sentences ({lang}).")
-                    
-                    if set_size_target > lang_datasets[set_name].shape[0] and lang in self.target_langs:
-                        self.smallest_set_tl[set_name] = (lang, lang_datasets[set_name].shape[0])
-
-                        if verbose:
-                            print(f"New smallest target language {set_name} set: {lang_datasets[set_name].shape[0]} sentences ({lang}).")
+                    if verbose:
+                        print(f"New smallest target language {set_name} set: {lang_datasets[set_name].shape[0]} sentences ({lang}).")
 
             # link all downloaded datasets to proper language
             self.lang2data[lang] = lang_datasets
@@ -321,11 +306,11 @@ class LanguageData():
 
         # return info about the smallest size for each set
         if set == 'all':
-            return self.smallest_set_tl
+            return self.smallest_target_set
         
         # return info about the smallest specified set
         else:
-            return self.smallest_set_tl[set]
+            return self.smallest_target_set[set]
     
     def _load_iob(self, url: str) -> tuple[list[list[str]], list[list[str]]]:
         """
@@ -510,8 +495,7 @@ class DataSplit():
         for lang in self.langData.lang_codes:
             
             # obtain train and test sets
-            if lang in self.langData.target_langs:
-                train_set_lang = self._obtain_train_set(lang)
+            train_set_lang = self._obtain_train_set(lang)
             test_set = self._obtain_test_set(lang)
 
             # store data
