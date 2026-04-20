@@ -12,6 +12,12 @@ parser.add_argument("-o", "--output", help="Output file for test set predictions
 
 parser.add_argument("-e", "--epochs", help="Number of fine-tuning epochs", required=True)
 
+parser.add_argument("-l", "--learnRate", help="Learning Rate", required=True)
+
+parser.add_argument("-b", "--batchSize", help="Batch Size", required=True)
+
+parser.add_argument("-f", "--finetune", help="Fine Tuning Method, can be: <to be added>", required=True)
+
 args = parser.parse_args()
 
 print(args.output, args.epochs)
