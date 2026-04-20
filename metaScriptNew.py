@@ -108,7 +108,7 @@ print(f"Downloaded Slurm log to {slurm_out}")
 
 local_output_filename = "final_predictions.iob2"
 with SCPClient(ssh.get_transport()) as scp:
-    scp.get(outputFile, local_job_filename)
+    scp.get(outputFile, local_output_filename)
 print(f'Downloaded output file to {local_output_filename}')
 
 ssh.close()
