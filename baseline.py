@@ -33,8 +33,9 @@ BATCH_SIZE = 8
 
 language_data = LanguageData(MODEL_NAME)
 
-train_dataset = DataSplit(language_data).get_train_set()
-test_dataset = DataSplit(language_data, random_state=0).get_test_set("eng")
+data_splitter = DataSplit(language_data)
+train_dataset = data_splitter.get_train_set()
+test_dataset = data_splitter.get_test_set("eng")
 
 multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7)
 multi_model = AutoModelForTokenClassification.from_pretrained(
@@ -51,7 +52,7 @@ test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False,
 
 idx_to_tag = language_data.idx2tag
 
-def train_model(model, dataloader, optimizer, epochs):
+def train_model(model, dataloader, optimizer, epochs, verbose):
     model.train()
     for epoch in range(epochs):
         total_loss = 0
@@ -64,7 +65,9 @@ def train_model(model, dataloader, optimizer, epochs):
             total_loss += loss.item()
             loss.backward()
             optimizer.step()
-        print(total_loss/len(pbar))
+        
+        if verbose:
+            print('Loss: ' + total_loss/len(pbar))
 
 metric = evaluate.load("seqeval")
 
