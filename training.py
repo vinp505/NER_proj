@@ -18,6 +18,7 @@ parser.add_argument("-e", "--epochs", help="Number of fine-tuning epochs", requi
 parser.add_argument("-lr", "--learnRate", help="Learning Rate", required=True)
 parser.add_argument("-b", "--batchSize", help="Batch Size", required=True)
 parser.add_argument("-f", "--finetune", help="Fine Tuning Method, can be: <to be added>", required=True)
+parser.add_argeument("-k", "-kNonTarget", help="Number of training examples to include from the non-target languages.", required=True)
 args = parser.parse_args()
 
 # print main arguments
@@ -50,6 +51,8 @@ multi_model = AutoModelForTokenClassification.from_pretrained(
     MODEL_NAME,
     config=multi_config
 )
+
+#____ADD SOME IF STATEMENT HERE TO CHECK IF THE METHOD IS LORA or FULL FINETUNE etc...
 
 peft_config = LoraConfig(
     task_type=TaskType.TOKEN_CLS,
