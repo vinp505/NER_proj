@@ -18,7 +18,7 @@ parser.add_argument("-e", "--epochs", help="Number of fine-tuning epochs", requi
 parser.add_argument("-lr", "--learnRate", help="Learning Rate", required=True)
 parser.add_argument("-b", "--batchSize", help="Batch Size", required=True)
 parser.add_argument("-f", "--finetune", help="Fine Tuning Method, can be: <to be added>", required=True)
-parser.add_argeument("-k", "-kNonTarget", help="Number of training examples to include from the non-target languages.", required=True)
+parser.add_argument("-k", "-kNonTarget", help="Number of training examples to include from the non-target languages.", required=True)
 args = parser.parse_args()
 
 # print main arguments
@@ -35,7 +35,7 @@ EPOCHS = int(args.epochs)
 BATCH_SIZE = int(args.batchSize)
 OUTPUT_DIR = pathlib.Path(args.output)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-MODEL_OUTPUT_PATH = OUTPUT_DIR / MODEL_NAME.split("/")[-1] + "_finetuned_" + args.language
+MODEL_OUTPUT_PATH = OUTPUT_DIR / (MODEL_NAME.split("/")[-1] + "_finetuned_" + args.language)
 
 # load data and split sets
 language_data = custom.LanguageData(MODEL_NAME)
