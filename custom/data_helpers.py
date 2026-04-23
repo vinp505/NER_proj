@@ -27,6 +27,8 @@ class LanguageData():
     ("slk", Slovakian), ("eng", English), ("swe", Swedish), ("nor", Norwegian), ("heb", Hebrew), ("rom", Romanian),
     ("por", Portuguese), ("ger", German), ("chi", Chinese), ("hrv", Croatian), ("srb", Serbian), ("dan", Danish).
 
+    The original dataset used is UniversalNER https://github.com/UniversalNER.
+
     Parameters
     -----------
 
@@ -34,7 +36,7 @@ class LanguageData():
         The string containing the base pretrained model name,
         needed to retrieve the tokenizer.
     
-    target_langs : list | str, optional (default= ["eng", "slk", "dan", "rom", "chi", "heb"])
+    target_langs : list | str, optional (default= ["eng", "slk", "dan", "rom", "chi"])
         List storing language codes for target languages of future fine-tuning.
         Information about the smallest target language data sets will be computed.
         It is possible to specify 'all' as a value, as a shorthand for adding all language codes in the list.
@@ -64,7 +66,7 @@ class LanguageData():
     """
 
     # model to obtain tokenizer
-    def __init__(self, model: str, target_langs: list | str = ["eng", "slk", "dan", "rom", "chi", "heb"], verbose: bool = False):
+    def __init__(self, model: str, target_langs: list | str = ["eng", "slk", "dan", "rom", "chi"], verbose: bool = False):
 
         # associate each language string code to partial data link
         lang2link = {
