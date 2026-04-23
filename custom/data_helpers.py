@@ -569,9 +569,10 @@ class DataSplit():
             train_set_lang, train_sent_lang = self._obtain_train_set(lang)
             test_set, test_sent = self._obtain_test_set(lang)
 
-            # store data
-            self.train_set.append(train_set_lang)
-            self.test_sets[lang] = test_set
+            # store data (if any was needed)
+            if train_sent_lang:
+                self.train_set.append(train_set_lang)
+                self.test_sets[lang] = test_set
 
             self.train_sent.extend(train_sent_lang)
             self.test_sent[lang] = test_sent
@@ -692,6 +693,10 @@ class DataSplit():
         else:
             size = self.k
         
+        # do not load anything if not required
+        if size == 0:
+            return False, False
+
         # obtain data sample
         sampled_train_set, sampled_train_sent = self._sample_data(train_set, train_sent, size)
         return sampled_train_set, sampled_train_sent
