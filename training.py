@@ -80,6 +80,7 @@ training_args = TrainingArguments(
     save_strategy="epoch",
     eval_strategy="epoch",
     logging_strategy="epoch",
+    load_best_model_at_end=True,
 )
 
 trainer = Trainer(
