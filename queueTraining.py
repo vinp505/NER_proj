@@ -39,7 +39,7 @@ for language in targetLanguages:
                 f"EPOCHS={EPOCHS} "
                 f"BATCH_SIZE={BATCH_SIZE} "
                 f"FINETUNE={fineTuneMethod} "
-                f"K_NON_TARGET={k}"
+                f"K_NON_TARGET={k} "
                 f"TARGET_LANG={language} "
                 "sbatch trainModel.job")
     # Submit the job
