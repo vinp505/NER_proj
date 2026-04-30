@@ -97,7 +97,7 @@ if FINETUNE_METHOD == "lora":
         eval_dataset=test_dataset,
         processing_class=tokenizer,
         data_collator=multi_data_collator,
-        compute_metrics=partial(custom.compute_metrics, evaluate.load("seqeval"))#compute metric function with seqeval metric specified
+        compute_metrics=partial(custom.compute_metrics, evaluate.load("seqeval"), language_data.idx2tag)#compute metric function with seqeval metric specified
     )
 
     trainer.train()

@@ -35,7 +35,7 @@ language_data = custom.LanguageData(MODEL_NAME)
 data_splitter = custom.DataSplit(language_data)
 
 # obtain needed datasets
-train_dataset = data_splitter.get_train_set()
+train_dataset = data_splittetrain_set()
 test_dataset = data_splitter.get_test_set("eng")
 
 # load model and configuration

@@ -122,44 +122,44 @@ def get_labels(predictions, references, idx_to_tag: dict[int, str]) -> tuple[lis
 
 # ------------------------------------------------------------
 
-# def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str, float]:
-#     """
-#     Based on given prediction - true label pairings,
-#     computes Precision, Recall, F1, and Accuracy measures.
-#     It returns them as a dictionary of name - value pairs.
+def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str, float]:
+    """
+    Based on given prediction - true label pairings,
+    computes Precision, Recall, F1, and Accuracy measures.
+    It returns them as a dictionary of name - value pairs.
 
-#     Arguments
-#     ---------
+    Arguments
+    ---------
     
-#     preds :
-#         The array containing predicted labels.
+    preds :
+        The array containing predicted labels.
     
-#     refs :
-#         The array containing reference / true labels.
+    refs :
+        The array containing reference / true labels.
     
-#     metric : evaluate.EvaluationModule
-#         The evaluation module needed to compute metrics.
+    metric : evaluate.EvaluationModule
+        The evaluation module needed to compute metrics.
     
-#     Returns
-#     -------
+    Returns
+    -------
 
-#     metric_vals : dict[str, float]
-#         The dictionary containing name - value pair for the
-#         evaluation metrics (Precision, Recall, F1, Accuracy).
-#     """
+    metric_vals : dict[str, float]
+        The dictionary containing name - value pair for the
+        evaluation metrics (Precision, Recall, F1, Accuracy).
+    """
 
-#     # compute metrics using the metric object
-#     results = metric.compute(predictions=preds, references=refs)
-#     return {
-#         "Precision": results["overall_precision"],
-#         "Recall": results["overall_recall"],
-#         "F1": results["overall_f1"],
-#         "Accuracy": results["overall_accuracy"],
-#     }
+    # compute metrics using the metric object
+    results = metric.compute(predictions=preds, references=refs)
+    return {
+        "Precision": results["overall_precision"],
+        "Recall": results["overall_recall"],
+        "F1": results["overall_f1"],
+        "Accuracy": results["overall_accuracy"],
+    }
 
 # ------------------------------------------------------------
 
-def compute_metrics(metric: evaluate.EvaluationModule, eval_prediction: EvalPrediction) -> dict[str, float]:
+def compute_metrics_hf(metric: evaluate.EvaluationModule, idx_to_tag:dict[int, str], eval_prediction: EvalPrediction) -> dict[str, float]:
     """
     Based on given EvalPrediction (contains predictions and true labels),
     computes Precision, Recall, F1, and Accuracy measures.
@@ -172,6 +172,9 @@ def compute_metrics(metric: evaluate.EvaluationModule, eval_prediction: EvalPred
     
     metric : evaluate.EvaluationModule
         The evaluation module needed to compute metrics.
+
+    idx_to_tag: dict[int, str]
+        The token index to label mapping dictionary used to retrieve the actual tokens from token indices. 
     
     eval_prediction :  
         The EvalPrediction class that stores predictions and true labels.
@@ -183,6 +186,7 @@ def compute_metrics(metric: evaluate.EvaluationModule, eval_prediction: EvalPred
         The dictionary containing name - value pair for the
         evaluation metrics (Precision, Recall, F1, Accuracy).
     """
+    predictions, labels = get_labels(eval_prediction.predictions, eval_prediction.label_ids, idx_to_tag=idx_to_tag)
 
     # compute metrics using the metric object
     results = metric.compute(predictions=eval_prediction.predictions, references=eval_prediction.label_ids)
