@@ -189,9 +189,8 @@ def compute_metrics_hf(metric: evaluate.EvaluationModule, idx_to_tag:dict[int, s
     predictions, labels = get_labels(eval_prediction.predictions, eval_prediction.label_ids, idx_to_tag=idx_to_tag)
 
     # compute metrics using the metric object
-    results = metric.compute(predictions=eval_prediction.predictions, references=eval_prediction.label_ids)
+    results = metric.compute(predictions=predictions, references=labels)
 
-    #results = metric.compute(predictions=preds, references=refs)
     return {
         "Precision": results["overall_precision"],
         "Recall": results["overall_recall"],
