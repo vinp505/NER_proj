@@ -122,6 +122,48 @@ def get_labels(predictions, references, idx_to_tag: dict[int, str]) -> tuple[lis
 
 # ------------------------------------------------------------
 
+def get_labels_hf(predictions, references, idx_to_tag: dict[int, str]) -> tuple[list[list[str]], list[list[str]]]:
+    """
+    Convert model outputs (logits) and references (label IDs)
+    into human-readable label names, ignoring subword tokens.
+
+    Args:
+        predictions: A numpy ndarray with shape [batch_size, seq_length],
+                     containing the predicted label IDs for each token.
+        references:  A numpy ndarray with the true label IDs for each token.
+
+    Returns:
+        true_predictions, true_labels:
+        - Each is a list of lists of strings.
+        - Outer list = batch dimension
+        - Inner list = predicted or true labels for each token in that example
+        - We skip any token whose label == -100 (these are subword tokens or padding).
+
+    Example:
+        Suppose label_list = ["O", "B-PER", "I-PER"],
+        predictions = [[0, 1, 2], [0, 0, 1]],
+        references  = [[0, 1, 2], [0, 0, -100]]
+
+        Then,
+        true_predictions might be [["O", "B-PER", "I-PER"], ["O", "O"]]
+        true_labels      might be [["O", "B-PER", "I-PER"], ["O", "O"]]
+    """
+
+    # no need to move labels or predictions to cpu or convert them cuz they are already numpy
+    
+    # initialize arrays to store final labels
+    true_predictions = []
+    true_labels = []
+
+    # translate labels from numerical to string format
+    for i, example in enumerate(references):
+      true_labels.append([idx_to_tag[idx] for idx in example if idx != -100])
+      true_predictions.append([idx_to_tag[idx] for j, idx in enumerate(predictions[i,:]) if references[i, j] != -100])
+    
+    return true_predictions, true_labels
+
+# ------------------------------------------------------------
+
 def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str, float]:
     """
     Based on given prediction - true label pairings,
@@ -186,7 +228,7 @@ def compute_metrics_hf(metric: evaluate.EvaluationModule, idx_to_tag:dict[int, s
         The dictionary containing name - value pair for the
         evaluation metrics (Precision, Recall, F1, Accuracy).
     """
-    predictions, labels = get_labels(eval_prediction.predictions, eval_prediction.label_ids, idx_to_tag=idx_to_tag)
+    predictions, labels = get_labels_hf(eval_prediction.predictions, eval_prediction.label_ids, idx_to_tag=idx_to_tag)
 
     # compute metrics using the metric object
     results = metric.compute(predictions=predictions, references=labels)
