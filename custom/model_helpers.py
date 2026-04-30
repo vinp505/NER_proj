@@ -2,7 +2,7 @@ import tqdm
 import torch
 import evaluate
 from torch.utils.data import DataLoader
-from transformers import PreTrainedTokenizerBase
+from transformers import PreTrainedTokenizerBase, EvalPrediction
 
 # ------------------------------------------------------------
 
@@ -122,23 +122,59 @@ def get_labels(predictions, references, idx_to_tag: dict[int, str]) -> tuple[lis
 
 # ------------------------------------------------------------
 
-def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str, float]:
+# def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str, float]:
+#     """
+#     Based on given prediction - true label pairings,
+#     computes Precision, Recall, F1, and Accuracy measures.
+#     It returns them as a dictionary of name - value pairs.
+
+#     Arguments
+#     ---------
+    
+#     preds :
+#         The array containing predicted labels.
+    
+#     refs :
+#         The array containing reference / true labels.
+    
+#     metric : evaluate.EvaluationModule
+#         The evaluation module needed to compute metrics.
+    
+#     Returns
+#     -------
+
+#     metric_vals : dict[str, float]
+#         The dictionary containing name - value pair for the
+#         evaluation metrics (Precision, Recall, F1, Accuracy).
+#     """
+
+#     # compute metrics using the metric object
+#     results = metric.compute(predictions=preds, references=refs)
+#     return {
+#         "Precision": results["overall_precision"],
+#         "Recall": results["overall_recall"],
+#         "F1": results["overall_f1"],
+#         "Accuracy": results["overall_accuracy"],
+#     }
+
+# ------------------------------------------------------------
+
+def compute_metrics(metric: evaluate.EvaluationModule, eval_prediction: EvalPrediction) -> dict[str, float]:
     """
-    Based on given prediction - true label pairings,
+    Based on given EvalPrediction (contains predictions and true labels),
     computes Precision, Recall, F1, and Accuracy measures.
     It returns them as a dictionary of name - value pairs.
+    Note: Use a partial function to fill out the metric
+    argument before passing this to the Hugging Face Trainer class.
 
     Arguments
     ---------
     
-    preds :
-        The array containing predicted labels.
-    
-    refs :
-        The array containing reference / true labels.
-    
     metric : evaluate.EvaluationModule
         The evaluation module needed to compute metrics.
+    
+    eval_prediction :  
+        The EvalPrediction class that stores predictions and true labels.
     
     Returns
     -------
@@ -149,7 +185,9 @@ def compute_metrics(preds, refs, metric: evaluate.EvaluationModule) -> dict[str,
     """
 
     # compute metrics using the metric object
-    results = metric.compute(predictions=preds, references=refs)
+    results = metric.compute(predictions=eval_prediction.predictions, references=eval_prediction.label_ids)
+
+    #results = metric.compute(predictions=preds, references=refs)
     return {
         "Precision": results["overall_precision"],
         "Recall": results["overall_recall"],
