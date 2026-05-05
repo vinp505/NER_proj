@@ -122,7 +122,7 @@ def get_labels(predictions, references, idx_to_tag: dict[int, str]) -> tuple[lis
 
 # ------------------------------------------------------------
 
-def get_labels_hf(predictions, references, idx_to_tag: dict[int, str]) -> tuple[list[list[str]], list[list[str]]]:
+def get_labels_hf(logits_preds, references, idx_to_tag: dict[int, str]) -> tuple[list[list[str]], list[list[str]]]:
     """
     Convert model outputs (logits) and references (label IDs)
     into human-readable label names, ignoring subword tokens.
@@ -150,6 +150,9 @@ def get_labels_hf(predictions, references, idx_to_tag: dict[int, str]) -> tuple[
     """
 
     # no need to move labels or predictions to cpu or convert them cuz they are already numpy
+
+    # the HF trainer outputs logits, we need to convert to integer labels
+    predictions = np.argmax(logits_preds, axis=-1)
     
     # initialize arrays to store final labels
     true_predictions = []
@@ -157,8 +160,9 @@ def get_labels_hf(predictions, references, idx_to_tag: dict[int, str]) -> tuple[
 
     # translate labels from numerical to string format
     for i, example in enumerate(references):
-      true_labels.append([idx_to_tag[idx] for idx in example if idx != -100])
-      true_predictions.append([idx_to_tag[idx] for j, idx in enumerate(predictions[i,:]) if references[i, j] != -100])
+        print(f"Idx:{example[0]}")#try to print 0th index of the sample
+        true_labels.append([idx_to_tag[int(idx)] for idx in example if idx != -100])
+        true_predictions.append([idx_to_tag[int(idx)] for j, idx in enumerate(predictions[i,:]) if references[i, j] != -100])
     
     return true_predictions, true_labels
 
@@ -228,6 +232,7 @@ def compute_metrics_hf(metric: evaluate.EvaluationModule, idx_to_tag:dict[int, s
         The dictionary containing name - value pair for the
         evaluation metrics (Precision, Recall, F1, Accuracy).
     """
+    print(f"Type of the logits_preds: {type(eval_prediction.predictions)}")
     predictions, labels = get_labels_hf(eval_prediction.predictions, eval_prediction.label_ids, idx_to_tag=idx_to_tag)
 
     # compute metrics using the metric object
