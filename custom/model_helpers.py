@@ -3,6 +3,7 @@ import torch
 import evaluate
 from torch.utils.data import DataLoader
 from transformers import PreTrainedTokenizerBase, EvalPrediction
+import numpy
 
 # ------------------------------------------------------------
 
