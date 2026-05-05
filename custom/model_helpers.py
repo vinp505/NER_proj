@@ -379,7 +379,7 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
         for sentence in batch["input_ids"]:
 
             # decode sentence, add empty line at the end
-            lines.extend(tokenizer.convert_ids_to_tokens(sentence, skip_special_tokens=True).split(" "))
+            lines.extend(tokenizer.convert_ids_to_tokens(sentence, skip_special_tokens=True))
             lines.append("")
         
         # move batch to available device
