@@ -51,7 +51,7 @@ def train_model(model, dataloader: DataLoader, optimizer, epochs: int = 3, verbo
 
         # use progressbar if verbose, else just iterate through the dataloader batches normally
         if verbose:
-            pbar = tqdm(dataloader, total=len(dataloader), desc=f"Training Epoch {epoch+1}")
+            pbar = tqdm.tqdm(dataloader, total=len(dataloader), desc=f"Training Epoch {epoch+1}")
         else:
             pbar = dataloader
 
@@ -290,7 +290,7 @@ def eval_model(model, dataloader: DataLoader, metric: evaluate.EvaluationModule,
 
     # use progressbar if verbose
     if verbose:
-        validation_progress_bar = tqdm(range(len(dataloader)))
+        validation_progress_bar = tqdm.tqdm(range(len(dataloader)))
     
     # set up arrays to store predicted and true labels
     all_predictions = []
@@ -365,7 +365,7 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
 
     # setup progressbar if verbose 
     if verbose:
-        validation_progress_bar = tqdm(range(len(dataloader)))
+        validation_progress_bar = tqdm.tqdm(range(len(dataloader)))
     
     # initialize arrays 
     all_predictions = []
