@@ -379,7 +379,7 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
         for sentence in batch["input_ids"]:
 
             # decode sentence, add empty line at the end
-            lines.extend(tokenizer.decode(sentence, skip_special_tokens=True).split(" "))
+            lines.extend(tokenizer.convert_ids_to_tokens(sentence, skip_special_tokens=True).split(" "))
             lines.append("")
         
         # move batch to available device
@@ -411,6 +411,9 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
             good_preds.append(pred)
         for label in all_labels[i]:
             good_labels.append(label)
+        
+        # good_preds.append("")
+        # good_labels.append("")
 
     # write data to file -- !!! doesn't this misalign labels, since the labels paired with empty lines are ignored?
                         #       or do I just not know that the tokenizer and the model also predict a label for the empty line?

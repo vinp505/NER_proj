@@ -439,18 +439,11 @@ class LanguageData():
         tokenized = tokenizer(
             sentences,
             is_split_into_words=True,
-            max_length=64,
-            truncation="only_first", # Keep the beginning, slice the rest
-            padding="max_length",    # Ensure all chunks are exactly 128
+            truncation=True,
+            padding=True,
             return_overflowing_tokens=False,
             return_tensors="pt"      # Returns PyTorch tensors (or "tf", "np")
         )
-
-        if verbose:
-            # verify wether any sentence is truncated due to the set max_length
-            for i, overflow in enumerate(tokenized.get("num_truncated_tokens", [])):
-                if overflow > 0:
-                    print(f"Sentence {i} lost {overflow} tokens due to truncation.")
         
         # align the labels to the tokenized sentences
         tokenized = self._align_labels(tokenized, labels)
@@ -698,6 +691,7 @@ class DataSplit():
             return False, False
 
         # obtain data sample
+        print(f"\nlanguage: {lang}")
         sampled_train_set, sampled_train_sent = self._sample_data(train_set, train_sent, size)
         return sampled_train_set, sampled_train_sent
 
@@ -718,6 +712,7 @@ class DataSplit():
 
         # reduce test set to size of the smallest train set
         size = self.langData.get_smallest_set_size("test")[1]
+        print(f"\nlanguage: {lang}")
         sampled_test_set, sampled_test_sent = self._sample_data(test_set, test_sent, size)
         
         return sampled_test_set, sampled_test_sent
@@ -733,13 +728,13 @@ class DataSplit():
             return data, sentences
         
         # compute entity density by counting total amt of tokens and of entities
-        tot_tokens = sum([len(sample["labels"]) for sample in data])  # !!! THIS COUNTS END OF SENTENCE PADDING TOKENS BUT IT IS FINE
+        tot_tokens = sum([sum([1 for x in sample["labels"] if (x != -100)]) for sample in data])
         tot_entities = sum([sum([1 for x in sample["labels"] if (x != -100) and (x != 0)]) for sample in data])#sum up all the entities
         density = tot_entities / tot_tokens
 
         # obtain amount of required densities to preserve density
         req_entities = int(size * 64 * density)
-
+        
         print(f"density: {density}")
         print(f"req_entities: {req_entities}")
 
