@@ -27,8 +27,8 @@ print(f"Successfully logged in as {username}.")
 
 # Upload the .job file -> such that edits are directly transferred without having to do a git pull on the hpc
 local_job_file = "hpc/trainModel.job"
-with SCPClient(ssh.get_transport()) as scp:
-    scp.put(local_job_file, "~/NER_proj/hpc/trainModel.job")
+# with SCPClient(ssh.get_transport()) as scp:
+#     scp.put(local_job_file, "~/NER_proj/hpc/trainModel.job")
 
 lang2JobId = {}#map from target language to job id
 for language in targetLanguages:
