@@ -58,6 +58,6 @@ test_dataloader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False,
 metric = evaluate.load("seqeval")
 
 # main part: train - eval
-custom.train_model(multi_model, train_dataloader, optimizer, EPOCHS)
+#custom.train_model(multi_model, train_dataloader, optimizer, EPOCHS)
 custom.eval_model(multi_model, test_dataloader, metric, language_data.idx2tag)
-custom.save_predictions(multi_model, test_dataloader, tokenizer, args.output)
+custom.save_predictions(multi_model, test_dataloader, tokenizer, args.output, language_data.idx2tag)

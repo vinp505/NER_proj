@@ -330,7 +330,7 @@ def eval_model(model, dataloader: DataLoader, metric: evaluate.EvaluationModule,
 
 # ------------------------------------------------------------
 
-def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokenizerBase, filename: str, verbose: bool = True) -> None:
+def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokenizerBase, filename: str, idx_to_tag: dict[int, str], verbose: bool = True) -> None:
     """
     Stores predictions on the data of the given dataloader
     into a file.
@@ -346,6 +346,10 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
 
     filename : str
         The name of the file in which to store predictions.
+
+    idx_to_tag : dict[int, str]
+            Dictionary of integer - string pairs to convert numerical labels
+            into strinig labels, such as 'B-ORG', 'I-LOC', ...
 
     verbose : bool, optional (default= True)
         Flag variable to indicate wether or not the function should
@@ -379,7 +383,9 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
         for sentence in batch["input_ids"]:
 
             # decode sentence, add empty line at the end
-            lines.extend(tokenizer.convert_ids_to_tokens(sentence, skip_special_tokens=True))
+            decoded_sentence = tokenizer.decode(sentence, skip_special_tokens=True).split(" ")   
+
+            lines.extend(decoded_sentence)
             lines.append("")
         
         # move batch to available device
@@ -392,7 +398,7 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
 
         # store true and predicted labels
         labels = batch["labels"]
-        predicted_labels, true_labels = get_labels(predictions, labels, dataloader.idx2tag)
+        predicted_labels, true_labels = get_labels(predictions, labels, idx_to_tag)
         all_predictions.extend(predicted_labels)
         all_labels.extend(true_labels)
         
@@ -412,8 +418,12 @@ def save_predictions(model, dataloader: DataLoader, tokenizer: PreTrainedTokeniz
         for label in all_labels[i]:
             good_labels.append(label)
         
-        # good_preds.append("")
-        # good_labels.append("")
+        good_preds.append("")
+        good_labels.append("")
+    
+    print(len(good_labels))
+    print(len(good_preds))
+    print(len(lines))
 
     # write data to file -- !!! doesn't this misalign labels, since the labels paired with empty lines are ignored?
                         #       or do I just not know that the tokenizer and the model also predict a label for the empty line?

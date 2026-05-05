@@ -85,19 +85,18 @@ if FINETUNE_METHOD == "lora":
         per_device_eval_batch_size=BATCH_SIZE,
         num_train_epochs=EPOCHS,
         save_strategy="epoch",
-        eval_strategy="epoch",
+        eval_strategy="no",
+        do_eval= False,
         logging_strategy="epoch",
-        load_best_model_at_end=True
+        load_best_model_at_end=False
     )
 
     trainer = Trainer(
         model=peft_model,
         args=training_args,
         train_dataset=train_dataset,
-        eval_dataset=test_dataset,
         processing_class=tokenizer,
-        data_collator=multi_data_collator,
-        compute_metrics=partial(custom.compute_metrics_hf, evaluate.load("seqeval"), language_data.idx2tag)#compute metric function with seqeval metric specified
+        data_collator=multi_data_collator
     )
 
     trainer.train()
