@@ -79,7 +79,7 @@ if FINETUNE_METHOD == "lora":
     train_dataloader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, collate_fn=multi_data_collator)
 
     training_args = TrainingArguments(
-        output_dir=OUTPUT_DIR,
+        output_dir=MODEL_OUTPUT_PATH,
         learning_rate=LR,
         per_device_train_batch_size=BATCH_SIZE,
         per_device_eval_batch_size=BATCH_SIZE,
@@ -101,7 +101,7 @@ if FINETUNE_METHOD == "lora":
 
     trainer.train()
 
-    peft_model.save_pretrained(OUTPUT_DIR+"/"+TARGET_LANG)
+    peft_model.save_pretrained(MODEL_OUTPUT_PATH)
 
 else:
     print("For now, the only supported finetune method is \"lora\".")
