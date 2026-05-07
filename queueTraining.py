@@ -18,8 +18,8 @@ experimentName = f"{fineTuneMethod}_lr{round(LR,3)}_E{EPOCHS}_B{BATCH_SIZE}_k{k}
 outputDir = f"~/NER_proj/{experimentName}"
 
 #login
-username = input("Username:")
-password = getpass.getpass('Password:')
+username = input("Username: ")
+password = getpass.getpass('Password: ')
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect('hpc.itu.dk', username=username, password=password)

@@ -101,7 +101,7 @@ if FINETUNE_METHOD == "lora":
 
     trainer.train()
 
-    peft_model.save_pretrained(OUTPUT_DIR)
+    peft_model.save_pretrained(OUTPUT_DIR+"/"+TARGET_LANG)
 
 else:
     print("For now, the only supported finetune method is \"lora\".")
