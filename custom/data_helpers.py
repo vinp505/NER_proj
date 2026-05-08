@@ -10,7 +10,7 @@ import torch
 import numpy as np
 
 from transformers import AutoTokenizer
-from datasets import Dataset, concatenate_datasets
+from datasets import Dataset, concatenate_datasets, disable_progress_bar, enable_progress_bar
 from typing import Literal
 
 # ------------------------------------------------------------
@@ -517,6 +517,10 @@ class DataSplit():
         Amount of sequences to select from the train set of non-target languages.
         Must be less than or equal to the size of the smallest train set recorded.
     
+    verbose : bool, optional (default= False)
+        Flag to signal wether or not the class should print
+        information about the data splitting process.
+
     Methods
     --------
 
@@ -535,7 +539,7 @@ class DataSplit():
         if a specific language is given, the relative list of test senteces.
     """
         
-    def __init__(self, langData: LanguageData, target_lang: str = "all", k: int = 10):
+    def __init__(self, langData: LanguageData, target_lang: str = "all", k: int = 10, verbose: bool = False):
         
         # ensure the target language is among the ones considered target language when loading the data
         assert (target_lang in langData.target_langs) or target_lang == 'all', f"The given target language {target_lang} is not present in the accepted target language list of the LanguageData object {langData.target_langs}"
@@ -547,6 +551,10 @@ class DataSplit():
         self.langData = langData
         self.target_lang = target_lang
         self.k = k
+        self.verbose = verbose
+
+        if not self.verbose:
+            disable_progress_bar()
 
         # initialize train set, and test set dictionary
         self.train_set = []
@@ -573,6 +581,8 @@ class DataSplit():
         # only one train set is needed, concatenate individual sets into one
         self.train_set = concatenate_datasets(self.train_set, axis= 0)
 
+        if not verbose:
+            enable_progress_bar()
 
     def get_train_set(self) -> Dataset:
         """
@@ -664,6 +674,10 @@ class DataSplit():
         For non-target languages, only retain k sequences.
         """
 
+        if self.verbose:
+            print(f"\nlanguage: {lang}")
+            print(f"type: train set")
+
         # retrieve language train set
         lang_data = self.langData.get_lang_data(lang)
         train_set = lang_data["train"]
@@ -691,7 +705,6 @@ class DataSplit():
             return False, False
 
         # obtain data sample
-        print(f"\nlanguage: {lang}")
         sampled_train_set, sampled_train_sent = self._sample_data(train_set, train_sent, size)
         return sampled_train_set, sampled_train_sent
 
@@ -703,6 +716,10 @@ class DataSplit():
         as the smallest test set.
         """
         
+        if self.verbose:
+            print(f"\nlanguage: {lang}")
+            print(f"type: test set")
+
         # retrieve language test set
         lang_data = self.langData.get_lang_data(lang)
         test_set = lang_data["test"]
@@ -712,7 +729,6 @@ class DataSplit():
 
         # reduce test set to size of the smallest train set
         size = self.langData.get_smallest_set_size("test")[1]
-        print(f"\nlanguage: {lang}")
         sampled_test_set, sampled_test_sent = self._sample_data(test_set, test_sent, size)
         
         return sampled_test_set, sampled_test_sent
@@ -735,8 +751,9 @@ class DataSplit():
         # obtain amount of required densities to preserve density
         req_entities = int(size * 64 * density)
         
-        print(f"density: {density}")
-        print(f"req_entities: {req_entities}")
+        if self.verbose:
+            print(f"density: {density}")
+            print(f"req_entities: {req_entities}")
 
         # split data into sentences containing entities and sentences not containing any
         dataset_ent = data.filter(lambda row: any((tag != -100) and (tag != 0) for tag in row["labels"]))
@@ -771,9 +788,10 @@ class DataSplit():
             else:
                 sent_no_ent.append(sentences[i])
 
-        print(f"Sentences with entities: {len(sent_ent)}")
-        print(f"Sentences with no entities: {len(sent_no_ent)}")
-        print(f"Amt. needed sentences with entities: {amt_needed_sentences}")
+        if self.verbose:
+            print(f"Sentences with entities: {len(sent_ent)}")
+            print(f"Sentences with no entities: {len(sent_no_ent)}")
+            print(f"Amt. needed sentences with entities: {amt_needed_sentences}")
 
         # only retain the amount of sentences needed to preserve the entity density
         sampled_data_ent = dataset_ent.select(range(amt_needed_sentences))
