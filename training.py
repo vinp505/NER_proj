@@ -42,6 +42,7 @@ MODEL_OUTPUT_PATH = OUTPUT_DIR / (f"finetuned_model_{TARGET_LANG}")
 EPOCHS = int(args.epochs) if args.epochs != None else 20
 LR = float(args.learnRate) if args.learnRate != None else 3e-5
 BATCH_SIZE = int(args.batchSize) if args.batchSize != None else 8
+ACCUMUL_STEPS = BATCH_SIZE // 8
 FINETUNE_METHOD = args.finetune if args.finetune != None else "lora"
 K = int(args.kNonTarget) if args.kNonTarget != None else 10
 VERBOSE = args.verbose if args.verbose != None else False
@@ -55,8 +56,8 @@ if VERBOSE:
     print("Loading data ...")
 
 # load data and split sets
-language_data = custom.LanguageData(MODEL_NAME)
-data_splitter = custom.DataSplit(language_data, target_lang=TARGET_LANG, k=K)
+language_data = custom.LanguageData(MODEL_NAME, verbose= VERBOSE)
+data_splitter = custom.DataSplit(language_data, target_lang=TARGET_LANG, k=K, verbose= VERBOSE)
 
 # obtain needed datasets
 train_dataset = data_splitter.get_train_set() #assembles correct training set for the requested target language(s)
@@ -102,7 +103,7 @@ if FINETUNE_METHOD.lower() == "lora":
         output_dir=MODEL_OUTPUT_PATH,
         learning_rate=LR,
         per_device_train_batch_size=BATCH_SIZE,
-        per_device_eval_batch_size=BATCH_SIZE,
+        gradient_accumulation_steps=ACCUMUL_STEPS,
         num_train_epochs=EPOCHS,
         save_strategy="epoch",
         eval_strategy="no",

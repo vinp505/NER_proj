@@ -31,14 +31,14 @@ print(f"Using device: {device}")
 
 # parameter specification
 MODEL_NAME = "FacebookAI/xlm-roberta-base"
-BASELINE_FOLDER = "baseline"
 OUTPUT_DIR = pathlib.Path("baseline_model")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 EPOCHS = int(args.epochs) if args.epochs != None else 20
-LR = float(args.learnRate) if args.learnRate != None else 3e-5
-BATCH_SIZE = int(args.batchSize) if args.batchSize != None else 8
+LR = float(args.learnRate) if args.learnRate != None else 0.0001
+BATCH_SIZE = int(args.batchSize) if args.batchSize != None else 64
+ACCUMUL_STEPS = BATCH_SIZE // 8
 FINETUNE_METHOD = args.finetune if args.finetune != None else "lora"
-VERBOSE = args.verbose if args.verbose != None else False
+VERBOSE = bool(args.verbose) if args.verbose != None else False
 
 # print main arguments
 print("Model folder: ", OUTPUT_DIR, "\nNumber of epochs: ", EPOCHS)
@@ -49,8 +49,8 @@ if VERBOSE:
     print("Loading data ...")
 
 # load data and split sets
-language_data = custom.LanguageData(MODEL_NAME)
-data_splitter = custom.DataSplit(language_data, target_lang= "all")
+language_data = custom.LanguageData(MODEL_NAME, verbose= VERBOSE)
+data_splitter = custom.DataSplit(language_data, target_lang= "all", verbose= VERBOSE)
 
 # obtain needed dataset -> balanced across languages
 train_dataset = data_splitter.get_train_set()
@@ -98,8 +98,8 @@ if FINETUNE_METHOD.lower() == "lora":
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         learning_rate=LR,
-        per_device_train_batch_size=BATCH_SIZE,
-        per_device_eval_batch_size=BATCH_SIZE,
+        per_device_train_batch_size=BATCH_SIZE//ACCUMUL_STEPS,
+        gradient_accumulation_steps=ACCUMUL_STEPS,
         num_train_epochs=EPOCHS,
         save_strategy="epoch",
         eval_strategy="no",
