@@ -65,7 +65,7 @@ multi_model = AutoModelForTokenClassification.from_pretrained(
 # load tokenizer, collator, and eval module
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
 multi_data_collator = DataCollatorForTokenClassification(tokenizer)
-metric = evaluate.load("seqeval")
+eval_module = evaluate.load("seqeval")
 
 if VERBOSE:
     print("Loading model ...")
@@ -74,6 +74,8 @@ if VERBOSE:
 epochs = [e for e in os.listdir(MODEL_FOLDER) if e.startswith("epoch_")]
 epochs.sort(key=lambda x: int(x.split("_")[1]))
 
+# initialize dictionary to store results
+lang_eval_data = {}
 # iterate through epochs, evaluate each one
 for i, epoch in enumerate(epochs, 1):
 
@@ -91,14 +93,39 @@ for i, epoch in enumerate(epochs, 1):
 
         if VERBOSE:
             print(f" > {lang}")
-            
+
+        # initialize metrics dict for the language
+        lang_eval_data[lang] = {
+            "F1" : [],
+            "Precision" : [],
+            "Recall" : [],
+            "Accuracy" : []
+        }
+
         test_set_l = test_dataset[lang]
         dataloader = DataLoader(test_set_l, batch_size= 8, collate_fn= multi_data_collator)
-        custom.eval_model(peft_model, dataloader, metric, language_data.idx2tag, verbose= VERBOSE)
+        metrics = custom.eval_model(peft_model, dataloader, eval_module, language_data.idx2tag, verbose= VERBOSE)
 
-        # ADD NICER PRINTING AND SAVE RESULTS
+        # store metrics
+        for k, v in metrics.items():
+            lang_eval_data[lang][k].append(v)
     
     # delete model, empty cache before starting new run
     del peft_model
     torch.cuda.empty_cache()
 
+# print results if needed
+if VERBOSE:
+    print("\n\n")
+    for lang, data in lang_eval_data.items():
+        print("\n+" + "-"*63 + "+")
+        print(f"|{('Language: ' + lang):^63}|")
+        print("+" + "-"*63 + "+")
+        print(f"|{'Epoch':^11}|{'F1':^12}|{'Precision':^12}|{'Recall':^12}|{'Accuracy':^12}|")
+        print("+" + "-"*11 + ('+' + "-"*12)*4 + '+')
+
+        for i in range(len(epochs)):
+            print(f"|{(i+1):^11}|{data['F1'][i]:>12.3f}|{data['Precision'][i]:>12.3f}|{data['Recall'][i]:>12.3f}|{data['Accuracy'][i]:>12.3f}|")
+        print("+" + "-"*63 + "+")
+
+# ADD METHOD TO SAVE RESULTS TO FILE
