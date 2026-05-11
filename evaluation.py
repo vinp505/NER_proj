@@ -102,6 +102,13 @@ for i, epoch in enumerate(epochs, 1):
     if VERBOSE:
         print(f"Evaluating: epoch {i}")
     
+    # load model
+    multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7)
+    multi_model = AutoModelForTokenClassification.from_pretrained(
+        MODEL_NAME,
+        config=multi_config
+    )
+    
     # load lora weights for the epoch
     epoch_folder = os.path.join(MODEL_FOLDER, epoch)
     peft_model = PeftModel.from_pretrained(multi_model, epoch_folder)
@@ -116,12 +123,12 @@ for i, epoch in enumerate(epochs, 1):
 
         # obtain metrics
         test_set_l = test_dataset[lang]
-        dataloader = DataLoader(test_set_l, batch_size= 8, collate_fn= multi_data_collator)
+        dataloader = DataLoader(test_set_l, batch_size= 64, collate_fn= multi_data_collator)
         metrics = custom.eval_model(peft_model, dataloader, eval_module, language_data.idx2tag, verbose= VERBOSE)
         
 
         # store metrics
-        
+
         for k, v in metrics.items():
             lang_eval_data[lang][k].append(v)
         
@@ -135,6 +142,7 @@ for i, epoch in enumerate(epochs, 1):
             
     
     # delete model, empty cache before starting new run
+    del multi_model
     del peft_model
     torch.cuda.empty_cache()
 
