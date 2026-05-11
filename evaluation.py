@@ -162,7 +162,7 @@ for lang, data in lang_eval_data.items():
     print("+" + "-"*63 + "+")
 
 # save results in csv format
-with open(str(EVAL_DIR) + f'/evaluation_ftmodel_{TARGET_LANG}.csv') as f:
+with open(str(EVAL_DIR) + f'/evaluation_ftmodel_{TARGET_LANG}.csv', 'w') as f:
     
     f.write("lang,epoch,F1,precision,recall,accuracy\n")
 
