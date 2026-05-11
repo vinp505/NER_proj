@@ -749,7 +749,7 @@ class DataSplit():
         density = tot_entities / tot_tokens
 
         # obtain amount of required densities to preserve density
-        req_entities = int(size * 64 * density)
+        req_entities = int(size * (tot_tokens/data.shape[0]) * density)
         
         if self.verbose:
             print(f"density: {density}")
@@ -804,7 +804,12 @@ class DataSplit():
         # merge back the two sampled data sets
         sampled_data = concatenate_datasets([sampled_data_ent, sampled_data_no_ent], axis= 0)
         sampled_sent = sampled_sent_ent + sampled_sent_no_ent
-        
+
+        if self.verbose:
+            tot_tokens = sum([sum([1 for x in sample["labels"] if (x != -100)]) for sample in sampled_data])
+            tot_entities = sum([sum([1 for x in sample["labels"] if (x != -100) and (x != 0)]) for sample in sampled_data])#sum up all the entities
+            density = tot_entities / tot_tokens
+            print("sample density: ", density)
 
         # shuffle
         
