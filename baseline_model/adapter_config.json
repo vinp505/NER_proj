@@ -34,9 +34,9 @@
   "revision": null,
   "target_modules": [
     "key",
+    "dense",
     "value",
-    "query",
-    "dense"
+    "query"
   ],
   "target_parameters": null,
   "task_type": "TOKEN_CLS",
