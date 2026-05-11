@@ -6,9 +6,9 @@ from scp import SCPClient
 
 #set hyperparameters
 outputDir = "~/NER_proj/final_predictions.iob2"#this is the location where the server saves the predictions -> we will get them from there and copy them to local
-LR = 3e-5
+LR = 1e-4
 EPOCHS = 20
-BATCH_SIZE = 8
+BATCH_SIZE = 64
 fineTuneMethod = "lora"
 targetLanguages = ["eng", "slk", "dan", "rom", "chi"]#all languages that we wish to train models for
 k = 10#number of training examples to include from the non-target languages
