@@ -9,6 +9,7 @@ targetLanguages = ["all", "eng", "slk", "dan", "rom", "chi"]#all languages that 
 #set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here
 experimentName = f"NER_models_evaluation"
 outputDir = f"~/NER_proj/{experimentName}"
+modelDir = "~/NER_proj/lora_lr0.0_E20_B64_k10"
 
 #login
 username = input("Username: ")
@@ -28,6 +29,7 @@ for language in targetLanguages:
     #construct the command: (has to be in one go since each call to ssh.exec_command() produces a new session)
     command = (f"cd ~/NER_proj/hpc && "
                 f"TARGET_LANG={language} "
+                f"MODEL_DIR={modelDir}"
                 "sbatch evalModel.job")
     # Submit the job
     stdin, stdout, stderr = ssh.exec_command(command)

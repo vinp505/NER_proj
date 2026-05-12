@@ -36,8 +36,8 @@ if TARGET_LANG == 'all':
     MODEL_FOLDER = "baseline_model"
 else:
     MODEL_DIR = pathlib.Path(args.modelFolder) if args.modelFolder != None else pathlib.Path(f"finetuned_models")
-    MODEL_FOLDER = MODEL_DIR / (f"finetuned_model_{TARGET_LANG}")
-
+    MODEL_FOLDER = MODEL_DIR / f"finetuned_model_{TARGET_LANG}"
+    
 EVAL_DIR = pathlib.Path(args.evalDirectory) if args.evalDirectory != None else pathlib.Path("evaluation_results")
 EVAL_DIR.mkdir(parents=True, exist_ok=True)
 VERBOSE = bool(args.verbose) if args.verbose != None else False

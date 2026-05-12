@@ -17,4 +17,4 @@ echo "Running on $(hostname):"
 nvidia-smi
 
 python3 test_gpu.py
-python3 evaluation.py -l {TARGET_LANG}
+python3 evaluation.py -l {TARGET_LANG} -m {MODEL_DIR}
