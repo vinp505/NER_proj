@@ -9,7 +9,7 @@ targetLanguages = ["all", "eng", "slk", "dan", "rom", "chi"]#all languages that 
 #set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here
 experimentName = f"NER_models_evaluation"
 outputDir = f"~/NER_proj/{experimentName}"
-modelDir = "~/NER_proj/lora_lr0.0_E20_B64_k10"
+modelDir = "~/NER_proj/lora_lr0001_E20_B64_k10"
 
 #login
 username = input("Username: ")

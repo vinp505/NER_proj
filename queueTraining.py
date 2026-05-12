@@ -14,7 +14,7 @@ targetLanguages = ["eng", "slk", "dan", "rom", "chi"]#all languages that we wish
 k = 10#number of training examples to include from the non-target languages
 
 #set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here
-experimentName = f"{fineTuneMethod}_lr{round(LR,3)}_E{EPOCHS}_B{BATCH_SIZE}_k{k}"
+experimentName = f"{fineTuneMethod}_lr{str(LR).split('.')[-1]}_E{EPOCHS}_B{BATCH_SIZE}_k{k}"
 outputDir = f"~/NER_proj/{experimentName}"
 
 #login
