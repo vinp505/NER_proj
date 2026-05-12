@@ -29,7 +29,7 @@ for language in targetLanguages:
     #construct the command: (has to be in one go since each call to ssh.exec_command() produces a new session)
     command = (f"cd ~/NER_proj/hpc && "
                 f"TARGET_LANG={language} "
-                f"MODEL_DIR={modelDir}"
+                f"MODEL_DIR={modelDir} "
                 "sbatch evalModel.job")
     # Submit the job
     stdin, stdout, stderr = ssh.exec_command(command)
