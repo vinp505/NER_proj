@@ -58,13 +58,6 @@ data_splitter = custom.DataSplit(language_data, verbose= VERBOSE)
 # obtain needed datasets
 test_dataset = data_splitter.get_test_set()
 
-# load model and configuration -> oob model
-multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7)
-multi_model = AutoModelForTokenClassification.from_pretrained(
-    MODEL_NAME,
-    config=multi_config
-)
-
 # load tokenizer, collator, and eval module
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
 multi_data_collator = DataCollatorForTokenClassification(tokenizer)
@@ -101,6 +94,7 @@ for i, epoch in enumerate(epochs, 1):
 
     if VERBOSE:
         print(f"Evaluating: epoch {i}")
+        print(f"Loading model ...")
     
     # load model
     multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7)
@@ -140,7 +134,7 @@ for i, epoch in enumerate(epochs, 1):
             lang_f1_records[lang]["High"]["F1"] = metrics['F1']
             lang_f1_records[lang]["High"]["Epoch"] = i
             
-    
+ 
     # delete model, empty cache before starting new run
     del multi_model
     del peft_model
