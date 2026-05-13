@@ -19,6 +19,8 @@ ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect('hpc.itu.dk', username=username, password=password)
 print(f"Successfully logged in as {username}.")
 
+accessToken = input("Please paste your huggingface access token for pulling the models: ")
+
 # Upload the .job file -> such that edits are directly transferred without having to do a git pull on the hpc
 local_job_file = "hpc/evalModel.job"
 # with SCPClient(ssh.get_transport()) as scp:
@@ -30,6 +32,7 @@ for language in targetLanguages:
     command = (f"cd ~/NER_proj/hpc && "
                 f"TARGET_LANG={language} "
                 f"MODEL_DIR={modelDir} "
+                f"HF_TOKEN={accessToken} "
                 "sbatch evalModel.job")
     # Submit the job
     stdin, stdout, stderr = ssh.exec_command(command)

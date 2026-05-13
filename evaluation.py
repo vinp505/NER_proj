@@ -19,10 +19,14 @@ from peft import LoraConfig, TaskType, get_peft_model, PeftModel
 # add a parser, include needed arguments
 parser = argparse.ArgumentParser(description="Evaluate model")
 parser.add_argument("-l", "--language", help="Target language code of the model to be evaluated: 'all' (baseline model), 'eng', 'slk', 'dan', 'rom', 'chi'", required=True)
+parser.add_argument("-t", "--hfToken", help= "Your hugging face access token for pulling the models.", required=True)
 parser.add_argument("-m", "--modelFolder", help="Folder containing the model (folder) to be evaluated", required=False)
 parser.add_argument("-d", "--evalDirectory", help="Directory in which to save the evaluation results", required=False)
 parser.add_argument("-v", "--verbose", help= "Boolean flag to indicate whether or not the script should periodically print status updates", required= False)
 args = parser.parse_args()
+
+#define the token:
+accessToken = args.hfToken
 
 # move to GPU if available
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -59,7 +63,7 @@ data_splitter = custom.DataSplit(language_data, verbose= VERBOSE)
 test_dataset = data_splitter.get_test_set()
 
 # load tokenizer, collator, and eval module
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True)
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True, token=accessToken)
 multi_data_collator = DataCollatorForTokenClassification(tokenizer)
 eval_module = evaluate.load("seqeval")
 
@@ -97,10 +101,10 @@ for i, epoch in enumerate(epochs, 1):
         print(f"Loading model ...")
     
     # load model
-    multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7)
+    multi_config = AutoConfig.from_pretrained(MODEL_NAME, num_labels=7, token=accessToken)
     multi_model = AutoModelForTokenClassification.from_pretrained(
         MODEL_NAME,
-        config=multi_config
+        config=multi_config, token=accessToken
     )
     
     # load lora weights for the epoch
