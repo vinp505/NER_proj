@@ -98,9 +98,9 @@ class LanguageData():
         # store model and entity tags conversion dictionaries
         self.model = model
         self.tag2idx = {
-            "O": 0, 
+            'B-OTH': 0, 'I-OTH': 0, "O": 0, 
             'B-ORG': 1, 'I-ORG': 2,  
-            'B-OTH': 3, 'I-OTH': 4, 'B-PER': 3, 'I-PER': 4,  # for an out-of-insturctions tag 'OTHER', convert to PERSON 
+            'B-PER': 3, 'I-PER': 4,  # for an out-of-insturctions tag 'OTHER', convert to PERSON 
             'B-LOC': 5, 'I-LOC': 6}
         self.idx2tag = {i: tag for tag, i in self.tag2idx.items()}
 
