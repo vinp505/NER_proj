@@ -41,9 +41,10 @@ if TARGET_LANG == 'all':
 else:
     #MODEL_DIR = pathlib.Path(args.modelFolder) if args.modelFolder != None else pathlib.Path(f"finetuned_models")
     MODEL_DIR = args.modelFolder if args.modelFolder != None else "~/NER_proj/finetuned_models/"
+    #print(MODEL_DIR)
     MODEL_FOLDER = MODEL_DIR + f"finetuned_model_{TARGET_LANG}"
     MODEL_FOLDER = os.path.expanduser(MODEL_FOLDER)#expand for the current user such that it can actually be used by os.listdir
-    print(MODEL_FOLDER)
+    #print(MODEL_FOLDER)
     #MODEL_FOLDER = MODEL_DIR / f"finetuned_model_{TARGET_LANG}"
     
 EVAL_DIR = pathlib.Path(args.evalDirectory) if args.evalDirectory != None else pathlib.Path("evaluation_results")
