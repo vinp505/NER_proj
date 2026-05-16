@@ -675,8 +675,8 @@ class DataSplit():
         """
 
         if self.verbose:
-            print(f"\nlanguage: {lang}")
-            print(f"type: train set")
+            print(f"\nLanguage: {lang}")
+            print(f"Type: train set")
 
         # retrieve language train set
         lang_data = self.langData.get_lang_data(lang)
@@ -717,8 +717,8 @@ class DataSplit():
         """
         
         if self.verbose:
-            print(f"\nlanguage: {lang}")
-            print(f"type: test set")
+            print(f"\nLanguage: {lang}")
+            print(f"Type: test set")
 
         # retrieve language test set
         lang_data = self.langData.get_lang_data(lang)
@@ -739,10 +739,6 @@ class DataSplit():
         ensuring entity density is preserved.
         """
 
-        # if size is equal to amt of data, just return the data
-        if size == data.shape[0]:
-            return data, sentences
-        
         # compute entity density by counting total amt of tokens and of entities
         tot_tokens = sum([sum([1 for x in sample["labels"] if (x != -100)]) for sample in data])
         tot_entities = sum([sum([1 for x in sample["labels"] if (x != -100) and (x != 0)]) for sample in data])#sum up all the entities
@@ -750,10 +746,14 @@ class DataSplit():
 
         # obtain amount of required densities to preserve density
         req_entities = int(size * (tot_tokens/data.shape[0]) * density)
+
+        # if size is equal to amt of data, just return the data
+        if size == data.shape[0]:
+            return data, sentences
         
         if self.verbose:
-            print(f"density: {density}")
-            print(f"req_entities: {req_entities}")
+            print(f"Density: {density:.4f}")
+            print(f"Required entities: {req_entities}")
 
         # split data into sentences containing entities and sentences not containing any
         dataset_ent = data.filter(lambda row: any((tag != -100) and (tag != 0) for tag in row["labels"]))
@@ -808,8 +808,8 @@ class DataSplit():
         if self.verbose:
             tot_tokens = sum([sum([1 for x in sample["labels"] if (x != -100)]) for sample in sampled_data])
             tot_entities = sum([sum([1 for x in sample["labels"] if (x != -100) and (x != 0)]) for sample in sampled_data])#sum up all the entities
-            density = tot_entities / tot_tokens
-            print("sample density: ", density)
+            density_sample = tot_entities / tot_tokens
+            print(f"Sample density: {density_sample:.4f} ({(density_sample - density):.4f} change)")
 
         # shuffle
         
@@ -820,5 +820,3 @@ class DataSplit():
         sampled_sent = [sampled_sent[i] for i in new_idx]
 
         return sampled_data, sampled_sent
-
-
