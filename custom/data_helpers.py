@@ -98,9 +98,9 @@ class LanguageData():
         # store model and entity tags conversion dictionaries
         self.model = model
         self.tag2idx = {
-            'B-OTH': 0, 'I-OTH': 0, "O": 0, 
+            'B-OTH': 0, 'I-OTH': 0, "O": 0,  # for an out-of-insturctions tag 'OTHER', convert to O (no entity)
             'B-ORG': 1, 'I-ORG': 2,  
-            'B-PER': 3, 'I-PER': 4,  # for an out-of-insturctions tag 'OTHER', convert to PERSON 
+            'B-PER': 3, 'I-PER': 4,  
             'B-LOC': 5, 'I-LOC': 6}
         self.idx2tag = {i: tag for tag, i in self.tag2idx.items()}
 
@@ -197,6 +197,7 @@ class LanguageData():
                 # split
                 
                 d = tmp_datasets[0]
+                d = d.shuffle(seed= 42)
                 train_set_size = int(tr*d.shape[0])
                 train_set = d.select(range(train_set_size))
                 test_set = d.select(range(train_set_size, d.shape[0]))
