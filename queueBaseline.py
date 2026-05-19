@@ -10,6 +10,9 @@ EPOCHS = 10
 BATCH_SIZE = 4#this is what UNER proposes when training on "all"
 fineTuneMethod = "lora"
 
+#set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here
+experimentName = f"{fineTuneMethod}_lr{str(LR).split('.')[-1]}_E{EPOCHS}_B{BATCH_SIZE}"
+outputDir = f"~/NER_proj/baseline_model_{experimentName}"
 
 #login
 username = input("Username: ")
