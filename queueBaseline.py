@@ -19,6 +19,8 @@ ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect('hpc.itu.dk', username=username, password=password)
 print(f"Successfully logged in as {username}.")
 
+targetLanguages = ["all the languages"]#just a placeholder so the code below doesn't break
+
 lang2JobId = {}#map from target language to job id
 for language in targetLanguages:
     #construct the command: (has to be in one go since each call to ssh.exec_command() produces a new session)
