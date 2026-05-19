@@ -23,6 +23,7 @@ parser.add_argument("-lr", "--learnRate", help="Learning Rate", required=False)
 parser.add_argument("-b", "--batchSize", help="Batch Size", required=False)
 parser.add_argument("-f", "--finetune", help="Fine Tuning Method, can be: <to be added>", required=False)
 parser.add_argument("-v", "--verbose", help= "Boolean flag to indicate whether or not the script should periodically print status updates", required= False)
+parser.add_argument("-o", "--output", help="Output folder for trained model", required=True)
 args = parser.parse_args()
 
 # move to GPU if available
@@ -31,7 +32,7 @@ print(f"Using device: {device}")
 
 # parameter specification
 MODEL_NAME = "FacebookAI/xlm-roberta-base"
-OUTPUT_DIR = pathlib.Path("baseline_model")
+OUTPUT_DIR = pathlib.Path(args.output)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 EPOCHS = int(args.epochs) if args.epochs != None else 20
 LR = float(args.learnRate) if args.learnRate != None else 0.0001
