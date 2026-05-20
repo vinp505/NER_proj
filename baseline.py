@@ -77,7 +77,7 @@ if FINETUNE_METHOD.lower() == "lora":
     # configure lora finetuning
     peft_config = LoraConfig(
         task_type=TaskType.TOKEN_CLS,
-        r=8,
+        r=32,
         lora_alpha=32,
         init_lora_weights="gaussian",
         target_modules=["query", "key", "value", "dense"]
