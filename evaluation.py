@@ -37,15 +37,11 @@ MODEL_NAME = "FacebookAI/xlm-roberta-base"
 TARGET_LANG = args.language
 
 if TARGET_LANG == 'all':
-    MODEL_FOLDER = os.path.expanduser("~/NER_proj/baseline_model")
+    MODEL_FOLDER = os.path.expanduser(args.modelFolder) if args.modelFolder != None else os.path.expanduser("~/NER_proj/baseline_model")#in this case we can just expand for the user, no need to adjust the folder to any target language
 else:
-    #MODEL_DIR = pathlib.Path(args.modelFolder) if args.modelFolder != None else pathlib.Path(f"finetuned_models")
-    MODEL_DIR = args.modelFolder if args.modelFolder != None else "~/NER_proj/finetuned_models/"
-    #print(MODEL_DIR)
-    MODEL_FOLDER = MODEL_DIR + f"/finetuned_model_{TARGET_LANG}"
+    MODEL_DIR = args.modelFolder if args.modelFolder != None else "~/NER_proj/finetuned_models/"#kinda redundant, the modelFolger should always be given as an argument
+    MODEL_FOLDER = MODEL_DIR + f"/finetuned_model_{TARGET_LANG}"#add the target language to get the folder where the actual model is saved
     MODEL_FOLDER = os.path.expanduser(MODEL_FOLDER)#expand for the current user such that it can actually be used by os.listdir
-    #print(MODEL_FOLDER)
-    #MODEL_FOLDER = MODEL_DIR / f"finetuned_model_{TARGET_LANG}"
     
 EVAL_DIR = pathlib.Path(args.evalDirectory) if args.evalDirectory != None else pathlib.Path("evaluation_results")
 EVAL_DIR.mkdir(parents=True, exist_ok=True)
