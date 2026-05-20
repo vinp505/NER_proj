@@ -17,4 +17,4 @@ echo "Running on $(hostname):"
 nvidia-smi
 
 python3 test_gpu.py
-python3 training.py -o ${OUTPUT_DIR} -e ${EPOCHS} -lr ${LEARNRATE} -f ${FINETUNE} -b ${BATCH_SIZE} -l ${TARGET_LANG} -k ${K_NON_TARGET}
+python3 training.py -o ${OUTPUT_DIR} -e ${EPOCHS} -lr ${LEARNRATE} -f ${FINETUNE} -b ${BATCH_SIZE} -l ${TARGET_LANG} -k ${K_NON_TARGET} -bd ${BASELINE_DIR}

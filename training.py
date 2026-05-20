@@ -26,6 +26,7 @@ parser.add_argument("-b", "--batchSize", help="Batch Size", required=False)
 parser.add_argument("-f", "--finetune", help="Fine Tuning Method, can be: <to be added>", required=False)
 parser.add_argument("-k", "--kNonTarget", help="Number of training examples to include from the non-target languages", required=False)
 parser.add_argument("-v", "--verbose", help= "Boolean flag to indicate whether or not the script should periodically print status updates", required= False)
+parser.add_argument("-bd", "--baselineDir", help="Directory where the script will look for the baseline (this is the starting point for training).")
 args = parser.parse_args()
 
 # move to GPU if available
@@ -34,7 +35,7 @@ print(f"Using device: {device}")
 
 # parameter specification
 MODEL_NAME = "FacebookAI/xlm-roberta-base"
-BASELINE_FOLDER = "baseline_model"
+BASELINE_FOLDER = pathlib.Path(args.baselineDir) if args.baselineDir != None else "baseline_model"
 TARGET_LANG = args.language
 OUTPUT_DIR = pathlib.Path(args.output) if args.output != None else pathlib.Path(f"finetuned_models")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -42,7 +43,7 @@ MODEL_OUTPUT_PATH = OUTPUT_DIR / (f"finetuned_model_{TARGET_LANG}")
 EPOCHS = int(args.epochs) if args.epochs != None else 20
 LR = float(args.learnRate) if args.learnRate != None else 1e-4
 BATCH_SIZE = int(args.batchSize) if args.batchSize != None else 64
-ACCUMUL_STEPS = BATCH_SIZE // 8
+ACCUMUL_STEPS = BATCH_SIZE // 8 if BATCH_SIZE >= 8 else 1
 FINETUNE_METHOD = args.finetune if args.finetune != None else "lora"
 K = int(args.kNonTarget) if args.kNonTarget != None else 10
 VERBOSE = args.verbose if args.verbose != None else False
