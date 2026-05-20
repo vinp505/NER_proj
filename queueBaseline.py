@@ -39,7 +39,7 @@ for language in targetLanguages:
     err = stderr.read().decode()
     if err:#if it's not the empty string, i.e. we got an error:
         print("STDERR:", err)
-    print(stdout.read().decode())
+    #print(stdout.read().decode())
     job_id = int(stdout.read().decode().split()[-1])
     lang2JobId[language] = job_id
 
