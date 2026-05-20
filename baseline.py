@@ -37,7 +37,7 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 EPOCHS = int(args.epochs) if args.epochs != None else 20
 LR = float(args.learnRate) if args.learnRate != None else 0.0001
 BATCH_SIZE = int(args.batchSize) if args.batchSize != None else 64
-ACCUMUL_STEPS = BATCH_SIZE // 8
+ACCUMUL_STEPS = BATCH_SIZE // 8 if BATCH_SIZE >= 8 else 1
 FINETUNE_METHOD = args.finetune if args.finetune != None else "lora"
 VERBOSE = bool(args.verbose) if args.verbose != None else False
 
