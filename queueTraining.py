@@ -6,14 +6,14 @@ from scp import SCPClient
 
 #set hyperparameters
 outputDir = "~/NER_proj/final_predictions.iob2"#this is the location where the server saves the predictions -> we will get them from there and copy them to local
-LR = 3e-5
-EPOCHS = 10
-BATCH_SIZE = 16
+LR = 1e-4
+EPOCHS = 15
+BATCH_SIZE = 64
 fineTuneMethod = "lora"
 targetLanguages = ["eng", "slk", "dan", "rom", "chi"]#all languages that we wish to train models for
-k = 10#number of training examples to include from the non-target languages
+k = 0#number of training examples to include from the non-target languages
 
-baselineDir = "~/NER_proj/baseline_model_lora_lr3e-05_E10_B4"#specify the directory where to take the baseline from (as a starting point for training)
+baselineDir = "~/NER_proj/baseline_model_lora_lr0001_E3_B64"#specify the directory where to take the baseline from (as a starting point for training)
 
 #set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here
 experimentName = f"{fineTuneMethod}_lr{str(LR).split('.')[-1]}_E{EPOCHS}_B{BATCH_SIZE}_k{k}"
