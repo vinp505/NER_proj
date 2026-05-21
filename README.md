@@ -16,15 +16,16 @@ Follow these steps in order. Steps 3–5 require your HPC credentials; step 6 ad
 Clone to the home directory of your user on the HPC:
 
 ```bash
-git clone <repo-url> ~/NER_proj
+git clone https://github.com/vinp505/NER_proj.git ~/NER_proj
 ```
 
 ### 2. Set Up the Environment
 
 ```bash
-cd ~/NER_proj
+cd ~/NER_proj/hpc
 sbatch setup.job
 ```
+You might want to setup the environment locally as well, which you can do by pip-installing the requirements.txt (for running the queue scripts)
 
 ### 3. Cache the Base Model *(optional, but recommended)*
 
@@ -35,7 +36,8 @@ sbatch downloadModel.job
 ### 4. Train the Baseline Model
 
 ```bash
-python queueBaseline.py --user <hpc-username> --password <hpc-password>
+cd ~/NER_proj
+python queueBaseline.py
 ```
 
 ### 5. Train Language-Specific Fine-Tunes
@@ -43,15 +45,15 @@ python queueBaseline.py --user <hpc-username> --password <hpc-password>
 Trains five models starting from the baseline weights, one per language (`eng`, `slk`, `dan`, `rom`, `chi`):
 
 ```bash
-python queueTraining.py --user <hpc-username> --password <hpc-password>
+python queueTraining.py
 ```
 
 ### 6. Evaluate All Models
 
-Evaluates each of the five models across all test sets. Results are saved to the `evaluation_results/` directory:
+Evaluates each of the five models across all test sets. Results are saved to the `evaluation_results/` directory. Provide a read-only Hugging-Face token:
 
 ```bash
-python queueEval.py --user <hpc-username> --password <hpc-password> --hf-token <huggingface-token>
+python queueEval.py
 ```
 
 ### 7. Merge Evaluation Results
