@@ -13,8 +13,13 @@ import evaluate
 import pathlib
 import os
 from peft import LoraConfig, TaskType, get_peft_model, PeftModel
+import uuid
 
 # ------------------------------------------------------------
+
+# don't redownload the models
+os.environ["HF_HOME"] = "/home/niev/NER_proj/hf_cache"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"  # prevents any attempt to re-download
 
 # add a parser, include needed arguments
 parser = argparse.ArgumentParser(description="Evaluate model")
@@ -66,7 +71,7 @@ test_dataset = data_splitter.get_test_set()
 # load tokenizer, collator, and eval module
 tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, use_fast=True, token=accessToken)
 multi_data_collator = DataCollatorForTokenClassification(tokenizer)
-eval_module = evaluate.load("seqeval")
+eval_module = evaluate.load("seqeval", experiment_id=str(uuid.uuid4()))
 
 if VERBOSE:
     print("Loading model ...")
