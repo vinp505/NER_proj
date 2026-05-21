@@ -571,12 +571,12 @@ class DataSplit():
             train_set_lang, train_sent_lang = self._obtain_train_set(lang)
             test_set, test_sent = self._obtain_test_set(lang)
 
-            # store data (if any was needed)
+            # store training data (if any was needed)
             if train_sent_lang:
                 self.train_set.append(train_set_lang)
-                self.test_sets[lang] = test_set
-
-            self.train_sent.extend(train_sent_lang)
+                self.train_sent.extend(train_sent_lang)
+            
+            self.test_sets[lang] = test_set
             self.test_sent[lang] = test_sent
         
         # only one train set is needed, concatenate individual sets into one
