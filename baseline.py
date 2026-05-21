@@ -99,6 +99,7 @@ if FINETUNE_METHOD.lower() == "lora":
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         learning_rate=LR,
+        lr_scheduler_type="constant",
         per_device_train_batch_size=BATCH_SIZE//ACCUMUL_STEPS,
         gradient_accumulation_steps=ACCUMUL_STEPS,
         num_train_epochs=EPOCHS,
