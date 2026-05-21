@@ -18,7 +18,8 @@ import uuid
 # ------------------------------------------------------------
 
 # don't redownload the models
-os.environ["HF_HOME"] = "/home/niev/NER_proj/hf_cache"
+cachePath = os.path.expanduser("~/NER_proj/hf_cache")
+os.environ["HF_HOME"] = cachePath
 os.environ["TRANSFORMERS_OFFLINE"] = "1"  # prevents any attempt to re-download
 
 # add a parser, include needed arguments

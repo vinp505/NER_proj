@@ -16,6 +16,11 @@ from peft import LoraConfig, TaskType, get_peft_model, PeftModel
 
 # ------------------------------------------------------------
 
+# don't redownload the models
+cachePath = os.path.expanduser("~/NER_proj/hf_cache")
+os.environ["HF_HOME"] = cachePath
+os.environ["TRANSFORMERS_OFFLINE"] = "1"  # prevents any attempt to re-download
+
 # add a parser, include needed arguments
 parser = argparse.ArgumentParser(description="Fine-tune model")
 parser.add_argument("-l", "--language", help="Fine tuning target language code: 'eng', 'slk', 'dan', 'rom', 'chi', or 'all' for all languages", required=True)
