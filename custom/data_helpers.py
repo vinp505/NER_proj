@@ -581,6 +581,7 @@ class DataSplit():
         
         # only one train set is needed, concatenate individual sets into one
         self.train_set = concatenate_datasets(self.train_set, axis= 0)
+        self.train_set = self.train_set.shuffle(seed= 42)
 
         if not verbose:
             enable_progress_bar()
