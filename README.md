@@ -68,13 +68,13 @@ scp -r <username>@hpc.itu.dk:/home/<username>/NER_proj/evaluation_results <path 
 
 ### 8. Merge Evaluation Results
 
-Open and run all cells in the notebook:
+Run the script:
 
 ```
-evaluation_results/merging_csv.ipynb
+evaluation_results/eval_csv_merging.py
 ```
 
-This produces `evaluation_results/evaluation_ftmodel_eng.csv`.
+This produces `evaluation_results/evaluation_merged.csv`.
 
 ### 9. Visualise Results
 
@@ -82,7 +82,8 @@ This produces `evaluation_results/evaluation_ftmodel_eng.csv`.
    ```bash
    cp evaluation_results/evaluation_ftmodel_eng.csv visualization/
    ```
-2. Open the Tableau workbook inside the `visualization/` directory — it will display the plots included in the paper.
+2. Rename the file to `evaluation_ftmodel_eng.csv` to ensure proper working of the Tableau workbook
+3. Open the Tableau workbook inside the `visualization/` directory — it will display the plots included in the paper.
 
 ---
 
