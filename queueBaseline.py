@@ -5,9 +5,9 @@ import os
 from scp import SCPClient
 
 #set hyperparameters
-LR = 3e-5
-EPOCHS = 10
-BATCH_SIZE = 4#this is what UNER proposes when training on "all"
+LR = 1e-4
+EPOCHS = 3
+BATCH_SIZE = 64#this is what UNER proposes when training on "all"
 fineTuneMethod = "lora"
 
 #set an experiment name (just derive it from the parameters) -> all stuff related to this training run will be saved here

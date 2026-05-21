@@ -16,6 +16,11 @@ from peft import LoraConfig, TaskType, get_peft_model, PeftModel
 
 # ------------------------------------------------------------
 
+# don't redownload the models
+cachePath = os.path.expanduser("~/NER_proj/hf_cache")
+os.environ["HF_HOME"] = cachePath
+os.environ["TRANSFORMERS_OFFLINE"] = "1"  # prevents any attempt to re-download
+
 # add a parser, include needed arguments
 parser = argparse.ArgumentParser(description="Fine-tune baseline model")
 parser.add_argument("-e", "--epochs", help="Number of fine-tuning epochs", required=False)
@@ -99,6 +104,7 @@ if FINETUNE_METHOD.lower() == "lora":
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
         learning_rate=LR,
+        lr_scheduler_type="constant",
         per_device_train_batch_size=BATCH_SIZE//ACCUMUL_STEPS,
         gradient_accumulation_steps=ACCUMUL_STEPS,
         num_train_epochs=EPOCHS,
